@@ -3,11 +3,13 @@ package com.example.lojaretrofit.views
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import com.example.lojaretrofit.api.API
 import com.example.lojaretrofit.databinding.ActivityListaProdutosBinding
 import com.example.lojaretrofit.databinding.CardItemBinding
 import com.example.lojaretrofit.model.Produto
 import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Picasso
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,17 +50,20 @@ class ListaProdutosActivity : AppCompatActivity() {
                     }
 
                 }
+                binding.progressBar.visibility = View.INVISIBLE
             }
 
             override fun onFailure(call: Call<List<Produto>>, t: Throwable) {
                 Snackbar.make(binding.root, "Não foi possível se conectar ao servidor", Snackbar.LENGTH_LONG).show()
 
                 Log.e("ListaProdutoActivity","ListarProdutos",t)
+                binding.progressBar.visibility = View.INVISIBLE
             }
 
         }
 
         API.produto.listar().enqueue(callback)
+        binding.progressBar.visibility = View.VISIBLE
     }
 
     fun atualizarTela(ListaProdutos: List<Produto>){
@@ -71,6 +76,11 @@ class ListaProdutosActivity : AppCompatActivity() {
             val cardBinding = CardItemBinding.inflate(layoutInflater)
             cardBinding.nome.text = it.nomeProduto
             cardBinding.preco.text = it.precProduto.toString()
+
+            Picasso
+                .get()
+                .load("https://oficinacordova.azurewebsites.net/android/rest/produto/image/")
+                .into(cardBinding.imagem)
 
             //adicionar a instancia do cartao dentro do container
             binding.container.addView(cardBinding.root)
